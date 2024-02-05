@@ -7,7 +7,17 @@ library(flextable)
 
 ui <- fluidPage(
   shinyjs::useShinyjs(),
+  tags$head(HTML("
+  <!-- Google tag (gtag.js) -->
+  <script async src=\"https://www.googletagmanager.com/gtag/js?id=G-Z73KJ7ZTCE\"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
   
+    gtag('config', 'G-Z73KJ7ZTCE');
+  </script>"
+  )),
   title = "Characteristic Table Generator",
   div(style = "text-align: center;", 
       h1("Characteristics Table Generator")),

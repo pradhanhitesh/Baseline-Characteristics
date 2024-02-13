@@ -159,8 +159,17 @@ server <- function(input, output, session) {
               type = list(where(is.numeric) ~ "continuous"),
               missing = "no",
               statistic = list(all_continuous() ~ "{mean} ({sd})")
-            ) %>%
-            add_p(test = list(where(is.numeric) ~ "aov")) %>%
+            ) 
+          # Determine if t.test or aov should be used
+          if (length(unique(data_excluded[[input$target_var]])) == 2) {
+            tbl <- tbl %>%
+              add_p(test = list(all_continuous() ~ "t.test"))
+          } else {
+            tbl <- tbl %>%
+              add_p(test = list(all_continuous() ~ "aov"))
+          }
+          
+          tbl <- tbl %>%
             add_overall() 
           
           # Convert the gtsummary table to a flextable

@@ -138,9 +138,8 @@ server <- function(input, output, session) {
         detail = "Please wait...",
         value = 0,
         {
-          for (i in 1:12) {
-            incProgress(1/12, detail = sprintf("Time elapsed: %d", i))
-            Sys.sleep(1)
+          while (is.null(input$file) || is.null(input$target_var) || is.null(input$variable_var) || is.null(input$exclude_vars)) {
+            Sys.sleep(0.5)
           }
           
           req(data(), input$target_var, input$variable_var, input$exclude_vars)
@@ -161,7 +160,7 @@ server <- function(input, output, session) {
               missing = "no",
               statistic = list(all_continuous() ~ "{mean} ({sd})")
             ) %>%
-            add_p(test = list(where(is.numeric) ~ "t.test")) %>%
+            add_p(test = list(where(is.numeric) ~ "aov")) %>%
             add_overall() 
           
           # Convert the gtsummary table to a flextable

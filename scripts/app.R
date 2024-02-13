@@ -7,7 +7,17 @@ library(flextable)
 
 ui <- fluidPage(
   shinyjs::useShinyjs(),
+  tags$head(HTML("
+  <!-- Google tag (gtag.js) -->
+  <script async src=\"https://www.googletagmanager.com/gtag/js?id=G-Z73KJ7ZTCE\"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
   
+    gtag('config', 'G-Z73KJ7ZTCE');
+  </script>"
+  )),
   title = "Characteristic Table Generator",
   div(style = "text-align: center;", 
       h1("Characteristics Table Generator")),
@@ -128,9 +138,8 @@ server <- function(input, output, session) {
         detail = "Please wait...",
         value = 0,
         {
-          for (i in 1:8) {
-            incProgress(1/5, detail = sprintf("Time elapsed: %d", i))
-            Sys.sleep(1)
+          while (is.null(input$file) || is.null(input$target_var) || is.null(input$variable_var) || is.null(input$exclude_vars)) {
+            Sys.sleep(0.5)
           }
           
           req(data(), input$target_var, input$variable_var, input$exclude_vars)
@@ -151,7 +160,7 @@ server <- function(input, output, session) {
               missing = "no",
               statistic = list(all_continuous() ~ "{mean} ({sd})")
             ) %>%
-            add_p(test = list(where(is.numeric) ~ "t.test")) %>%
+            add_p(test = list(where(is.numeric) ~ "aov")) %>%
             add_overall() 
           
           # Convert the gtsummary table to a flextable

@@ -5,7 +5,7 @@ account: pradhanhitesh
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 11134689
-bundleId: 8249331
+bundleId: 8260258
 url: https://pradhanhitesh.shinyapps.io/characteristics-table-generator/
 version: 1
 asMultiple: FALSE

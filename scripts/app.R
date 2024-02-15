@@ -27,7 +27,11 @@ ui <- fluidPage(
      tags$a(href = "https://www.linkedin.com/in/pradhanhitesh/", "Hitesh Pradhan"),
      id = "bottom_text",
      style = "color: red; text-align: center;"),
-  h5("Hello! Thank you for using the extension.", align = 'center'),
+  h5("Raise an issue",
+     tags$a(href = "https://github.com/pradhanhitesh/Characterisitcs-Table/issues", "here."),
+     "More information",
+     tags$a(href = "https://github.com/pradhanhitesh/Characterisitcs-Table", "[GitHub Source]"),
+     align = 'center'),
   sidebarLayout(
     sidebarPanel(
       fileInput("file", "Choose a CSV file", accept = ".csv"),
@@ -76,6 +80,14 @@ server <- function(input, output, session) {
   
   output$target_selector <- renderUI({
     selectInput("target_var", "Select Categorical Grouping Variable", choices = names(data()))
+  })
+  
+  output$variable_selector <- renderUI({
+    checkboxGroupInput("variable_var", "Select Categorical Variables", choices = names(data()))
+  })
+  
+  output$exclude_selector <- renderUI({
+    checkboxGroupInput("exclude_vars", "Exclude Variables", choices = names(data()))
   })
   
   observe({
@@ -159,8 +171,17 @@ server <- function(input, output, session) {
               type = list(where(is.numeric) ~ "continuous"),
               missing = "no",
               statistic = list(all_continuous() ~ "{mean} ({sd})")
-            ) %>%
-            add_p(test = list(where(is.numeric) ~ "aov")) %>%
+            ) 
+          # Determine if t.test or aov should be used
+          if (length(unique(data_excluded[[input$target_var]])) == 2) {
+            tbl <- tbl %>%
+              add_p(test = list(all_continuous() ~ "t.test"))
+          } else {
+            tbl <- tbl %>%
+              add_p(test = list(all_continuous() ~ "aov"))
+          }
+          
+          tbl <- tbl %>%
             add_overall() 
           
           # Convert the gtsummary table to a flextable
